@@ -1,0 +1,1239 @@
+---
+output:
+  html_document: 
+      includes:
+        in_header: ./images/header.html
+      navigation: horizontal
+      #“default”, “cerulean”, “journal”, “flatly”, “darkly”, “readable”, “spacelab”, “united”, “cosmo”, “lumen”, “paper”, “sandstone”, “simplex”, “yeti”
+      theme: flatly
+      highlight: zenburn #“default”, “tango”, “pygments”, “kate”, “monochrome”, “espresso”, “zenburn”, “haddock”, “breezedark”, “textmate”
+      fig.show: simplex
+      whitespace: zenburn
+      toc: true
+      toc_depth: 3
+      toc_float:
+        collapsed: yes
+        smooth_scroll: yes
+      number_sections: yes
+
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, error = FALSE)
+library(openxlsx)
+library(stringr)
+library(htmltools)
+Sample_Name <- "SRR7722937"
+```
+
+<br>
+<div class="jumbotron">
+
+<div class="fluid-row" id="header">
+  <h1 class="title toc-ignore"><center>
+  <strong>生命知源10X单细胞转录组分析报告</strong>
+    </center></h1>
+</div>
+<br>
+
+&emsp;  |  &emsp;
+------- | --------
+```{r}
+
+Project_name <- "陆军军医大学第一附属医院93个样本人转录组测序分析技术服务（委托）合同"
+
+library(htmltools)
+library("digest")
+Project_code <- toupper(digest(Project_name, "sha256"))
+Project_code <- paste0('SC',substr(Project_code,1,8),substr(toupper(digest(Sys.info()['user'], 'md5')),1,8))
+Report_code <- paste0(Project_code,'-',stringr::str_replace_all(Sys.Date(),'-',''))
+title_no <- paste0("<table><tr><td><strong>项目编号 &emsp;</strong></td>  <td>",Project_code,"</td></tr></table> ")
+HTML(title_no)
+title_name <- paste0("<table><tr><td><strong>项目名称 &emsp;</strong></td>  <td>",Project_name,"</td></tr></table> ")
+HTML(title_name)
+title_date <- paste0("<table><tr><td><strong>报告时间 &emsp;</strong></td> <td>",Sys.Date(),"</td></tr></table>")
+HTML(title_date)
+title_rptno <- paste0("<table><tr><td><strong>报告编号 &emsp;</strong></td> <td>",Report_code,"</td></tr></table> <br> <br>")
+HTML(title_rptno)
+```
+
+</div>
+
+
+<br>
+
+
+
+<div id="实验流程" class="section level1">
+<h1><span class="header-section-number">1</span> <strong>实验流程</strong></h1>
+<hr />
+<p>&emsp;&emsp;10x Genomics Chromium™系统的关键技术是利用上百万独特的Barcode标记不同的样品（长链DNA分子/单细胞）。首先，含有Barcode序列的Gel beads与样品和酶的混合物混合，然后与油表面活性剂结合形成GEMs（Gel Bead-In-Emulsions，意为包裹Gel beads，样品以及酶的混合物的油滴）。收集GEMs 流到储液器，Gel beads溶解释放Barcode序列，开始对样本进行标记。将每个液滴中含有Barcode 信息的产物混合，构建标准测序文库。</p>
+<p>&emsp;&emsp;从细胞样品提取到最终数据获得，样品检测、建库、测序等每一环节都会直接影响数据的数量和质量，从而影响后续信息分析的结果。为从源头保证测序数据准确可靠，诺禾致源承诺在数据的所有生产环节都严格把关，从根源上确保高质量数据的产出。10x Genomics Chromium™单细胞转录组整体实验流程图如下：</p>
+<p><img class="normal" src="./images/experiment_process.png"></p>
+
+
+<div id="单细胞悬液寄送" class="section level2">
+<h2><span class="header-section-number">1.1</span> <strong>单细胞悬液寄送</strong></h2>
+<hr />
+<p>&emsp;&emsp;样本类型不同，处理制备方法也存在差异。客户依据样本特性进行细胞悬液制备，具体可参考<a href="https://community.10xgenomics.com/t5/Single-Cell-Sample-Prep/bd-p/sample-prep-single-cell">10X官方样本处理建议</a>。</p>
+</div>
+<div id="样本质检" class="section level2">
+<h2><span class="header-section-number">1.2</span> <strong>样本质检</strong></h2>
+<hr />
+<p>&emsp;&emsp;对客户提供的单细胞悬液样本进行质检，质检标准：细胞活性&gt;80%，细胞浓度700-1200 cells/μL，细胞直径5-30μm，细胞总量可达50万个。达到质检要求的样本，可继续进行后续实验，否则会和客户及时沟通，确定是否进行后续的实验。</p>
+</div>
+<div id="反转录建库" class="section level2">
+<h2><span class="header-section-number">1.3</span> <strong>反转录+建库</strong></h2>
+<hr />
+<p>&emsp;&emsp;将检测合格的细胞经洗涤、重悬，制备成合适浓度的单细胞悬液。根据目标细胞数进行相应的上样，上样后，观察GEMs是否能够正常形成，若可以，则将GEMs吸出转移到PCR管中进行反转录及文库构建。库检合格后，上机测序。</p>
+</div>
+<div id="上机测序" class="section level2">
+<h2><span class="header-section-number">1.4</span> <strong>上机测序</strong></h2>
+<hr />
+<p>&emsp;&emsp;10x单细胞转录组文库，采用Illumina Hiseq PE150或NovaSeq PE150测序策略，推荐每个细胞测50,000-100,000条reads，即每个细胞测15-30M数据量。测序存在一定饱和性，适当加大测序数据量可提高基因的检出率。</p>
+
+
+</div>
+</div>
+<div id="信息分析流程" class="section level1">
+<h1><span class="header-section-number">2</span> <strong>信息分析流程</strong></h1>
+<hr />
+<p>&emsp;&emsp;获得原始测序序列(Sequenced Reads)后，通过如下流程进行生物信息分析。单细胞转录组的分析核心是细胞的分群和亚群差异基因的鉴定，使用10X官方分析软件Cell Ranger对细胞进行分型和差异分析，后续对这些差异基因进行功能富集，从而鉴定亚群的功能特征。 点击图片可查看高清图片：</p>
+<p class="center">
+<a href="src/images/pipeline.pdf" target="_blank"><img src="./images/pipeline.png" width="150%" height="50%" /></a>
+</p>
+
+
+</div>
+<div id="质控分析" class="section level1">
+<h1><span class="header-section-number">3</span> <strong>质控分析</strong></h1>
+<div id="原始测序数据说明" class="section level2">
+<h2><span class="header-section-number">3.1</span> <strong>原始测序数据说明</strong></h2>
+<hr />
+<p>&emsp;&emsp;高通量测序（如Illumina HiSeq PE125/PE150）下机得到的原始图像文件经CASAVA碱基识别转化为测序读段（Sequenced Reads），以FASTQ格式存储。FASTQ是一种存储生物序列及相应质量值的常用文本格式，以Illumina HiSeq PE150测序数据为例，双端长度均为150bp，10x文库read1的前26bp为细胞barcode和UMI信息，是区分read2来自哪个细胞的重要依据，26bp后的碱基为非有效数据，read2均为有效数据。</p>
+<p>&emsp;&emsp;fastq格式文件中每个read由四行描述信息组成，如下所示：</p>
+<pre><code>@ST-E00310:278:HF3GJALXX:5:1101:6745:1924 1:N:0:ACGCTCGA  
+TTTGGGCCCTTGGCAATGAATGTTGCCACCACTGTTCTGGGTGCAGAGGGGAAATGG
++  
+AA&amp;lt-FJFJ7J&amp;ltJJFFJJFJJJ&amp;ltFJJJJJJJJFJJJJFJJJJJAFJ7FJJJJ  
+@ST-E00310:278:HF3GJALXX:5:1101:6908:1924 1:N:0:ACGCTCGA  </code></pre>
+<p>&emsp;&emsp;上述文件中第一行以“@”开头，随后为Illumina测序标识符(Squence Identifiers)和描述文字；第二行是测序片段的碱基序列；第三行以“+”开头，随后为Illumina测序标识符(也可为空)；第四行是测序片段每个碱基相对应的测序质量值，该行中每个字符对应的ASCII值减去33，即为该碱基的测序质量值。</p>
+
+
+</div>
+<div id="rawdata数据质量评估" class="section level2">
+<h2><span class="header-section-number">3.2</span> <strong>RawData数据质量评估</strong></h2>
+<hr />
+<p>&emsp;&emsp;通过测序可以获得海量的数据信息，如何从得到的数据中获取合格的数据是信息分析的基础。因此对下机数据进行质量控制（QC）是数据分析的首项内容。fastp是目前常用的数据质量评估软件。采用fastp对下机后的数据（raw reads）质量进行基本的统计。原始下机数据根据index，lane或测序的时间不同，统一按照样本名称-1,2,3,4…依次排序命名，R1、R2为样品的read1和read2。数据质量会直接影响后续信息分析的结果。统计原始数据的质量和产出情况，汇总结果如下表所示：</p>
+
+```{r}
+dataFilter <- read.table('./1.QC/1.dataTable/datatable.txt', header = TRUE)
+DT::datatable(dataFilter,rownames = FALSE,
+extensions ="Buttons", 
+options = list(
+dom = 'Bfrtip',
+buttons = c('copy', 'csv', 'excel'),
+fixedHeader = TRUE,
+autoWidth = FALSE,
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p class="tremark"><small>
+<strong><font face="Times New Roman">LibraryID</font></strong>：文库号<br /> 
+<strong><font face="Times New Roman">Sample name</font></strong>：样品名<br /> 
+<strong><font face="Times New Roman">Raw reads</font></strong>：原始数据中的read pairs数<br /> 
+<strong><font face="Times New Roman">Raw Bases(G)</font></strong>：原始数据的碱基数<br /> 
+<strong><font face="Times New Roman">Q20(%)</font></strong>：Phred数值大于20的碱基占总碱基的百分比<br /> 
+<strong><font face="Times New Roman">Q30(%)</font></strong>：Phred数值大于30的碱基占总碱基的百分比<br /> 
+<strong><font face="Times New Roman">GC content(%)</font></strong>：clean reads中G与C占四种碱基的百分比
+</small></p>
+<p class="paragraph"><small>
+<b>fastp QC-Report:</b><a href="QC-Report/QC-X101SC19102815-Z01-J002-B2-37.html" title="点击打开" target="_blank">QC-Report.html</a>
+</small></p>
+
+
+</div>
+<div id="数据统计cell-ranger" class="section level2">
+<h2><span class="header-section-number">3.3</span> <strong>数据统计(Cell Ranger)</strong></h2>
+<hr />
+<p>&emsp;&emsp;Cell Ranger是由10x genomic公司官方提供的专门用于其单细胞转录组数据分析的软件包。Cell Ranger将前面产生的fastq测序数据比对到参考基因组上进行细胞和UMI计数，生成细胞-基因表达矩阵。</p>
+<p><font size="3"><strong>（1）比对</strong></p>
+<p>&emsp;&emsp;Cell Ranger使用的比对软件是star，将reads比对到参考基因组上后使用GTF注释文件进行校正，并区分出外显子区、内含子区、基因间区。具体的区分规则为：至少50% 比对到外显子上reads记为外显子区、将比对到非外显子区且与内含子区有交集的reads记为内含子区、除此之外均为基因间区。具体算法可参考<a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/overview">10X官网</a>。</p>
+<p><font size="3"><strong>（2） 细胞计数</strong></p>
+<p>&emsp;&emsp;Cell Ranger能够通过输入数据的barcode将每个细胞的reads区分出来，经过过滤筛选处理将统计出样品中的细胞数量、细胞的reads数和检测到的基因数。Cell Ranger 首先指定一个期望细胞数(N，默认为3000)，然后将barcodes按照各自的UMI总数由高到低进行排序，取前N个UMI数值的99%分位数为最大估算UMI总数(m)，将UMI数目超过m/10的barcodes作为最终捕获到的细胞。当有多个参考基因组（如人H和鼠M）时，Cell Ranger可以通过多基因组分析区分多物种混合建库的样品，主要根据barcode内每个物种对应的UMI数量进行区分，将其分成H和M两类。最后还会根据H，M各自UMI的分布和最大似然估计法估计多细胞比例(multiplet rate)，即(H,M)、(H,H)、(M,M)三种类型的多细胞占比。</p>
+<p>&emsp;&emsp;Cell Ranger 3.0引入了一种改进的细胞计数算法，该算法能够更好地识别低RNA含量的细胞群体，特别是当低RNA含量的细胞与高RNA含量的细胞混合时。该算法分为两步：第一步用上面的方法确定高RNA含量的barcode；在第二步中，选择一组具有低UMI计数的barcode，这些barcode可能表示“空的”GEM分区，建立RNA图谱背景模型。利用Simple Good-Turing smoothing平滑算法，对典型空GEM集合中未观测到的基因进行非零模型估计。最后，将第一步中未作为细胞计数的barcode RNA图谱与背景模型进行比较，其RNA谱与背景模型存在较大差异的barcode用于低RNA含量的细胞计数。当有多个参考基因组（如人H和鼠M）时，Cell Ranger可以通过多基因组分析区分多物种混合建库的样品，主要根据barcode内每个物种对应的UMI数量进行区分，将其分成H和M两类。最后还会根据H，M各自UMI的分布和最大似然估计法估计多细胞比例(multiplet rate)，即(H,M)、(H,H)、(M,M)三种类型的多细胞占比。</p>
+<p>&emsp;&emsp;基于Cell Ranger进行基本的数据分析，主要结果包括：实验捕获的细胞数目统计、检测到的gene数目统计、测序数据的产出和质量统计、参考基因组比对情况等。该项目每个样本的统计结果如下：</p>
+<p>
+</p>
+
+```{r}
+dataFilter <- read.csv(paste0('./2.Summary/',Sample_Name,'/metrics_summary.csv'))
+DT::datatable(dataFilter,rownames = FALSE,
+extensions ="Buttons", 
+options = list(
+dom = 'Bfrtip',
+buttons = c('copy', 'csv', 'excel'),
+fixedHeader = TRUE,
+scrollX = TRUE, 
+autoWidth = TRUE,
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p>
+</p>
+<p class="tremark"><small>
+<strong><font face="Times New Roman">Estimated Number of Cells</font></strong>：预估到的细胞数量，根据rawdata中每条reads的barcode和UMI信息,估算的细胞总数<br /> 
+<strong><font face="Times New Roman">Mean Reads per Cell</font></strong>：根据测序数据量及细胞数量，计算得到的平均每个细胞中测到的reads数量<br /> 
+<strong><font face="Times New Roman">Median Genes per Cell</font></strong>：单个细胞中检测到基因数目的中位数<br /> 
+<strong><font face="Times New Roman">Number of Reads</font></strong>：测序得到总reads数<br /> 
+<strong><font face="Times New Roman">Valid Barcodes</font></strong>：有效的barcodes数目<br /> 
+<strong><font face="Times New Roman">Reads Mapped Confidently to Transcriptome</font></strong>：比对到转录本上的reads占整体的比例<br /> 
+<strong><font face="Times New Roman">Reads Mapped Confidently to Exonic Regions</font></strong>：比对到外显子上的reads占整体的比例<br /> 
+<strong><font face="Times New Roman">Reads Mapped Confidently to Intronic Regions</font></strong>：比对到内含子上的reads占整体的比例<br /> 
+<strong><font face="Times New Roman">Reads Mapped Confidently to Intergenic Regions</font></strong>：比对到基因间区的reads占整体的比例<br /> 
+<strong><font face="Times New Roman">Sequencing Saturation</font></strong>：测序的饱和度<br /> 
+<strong><font face="Times New Roman">Q30 Bases in Barcode</font></strong>：barcode的Q30值<br />
+<strong><font face="Times New Roman">Q30 Bases in RNA Read</font></strong>：测序序列的Q30值<br /> 
+<strong><font face="Times New Roman">Q30 Bases in UMI</font></strong>：UMI 的Q30值<br /> 
+<strong><font face="Times New Roman">Estimated Number of Cells</font></strong>：预估的细胞数量<br /> 
+<strong><font face="Times New Roman">Fraction Reads in Cells</font></strong>：细胞中有效reads的比例<br /> 
+<strong><font face="Times New Roman">Mean Reads per Cell</font></strong>：单个细胞中的平均reads数<br /> 
+<strong><font face="Times New Roman">Median Genes per Cell</font></strong>：单个细胞中检测到基因数目的中位数<br /> 
+<strong><font face="Times New Roman">Total Genes Detected</font></strong>：检测到的总基因数量<br /> 
+<strong><font face="Times New Roman">Median UMI Counts per Cell</font></strong>：单个细胞中UMI counts的中位数<br />
+</small></p>
+<p>CellRanger web 详细报告如下超链接：</p>
+<p class="paragraph"><small>
+<strong><font face="Times New Roman">SRR7722939</font></strong>: <a href="./Result/2.Summary/SRR7722939/web_summary.html" title="点击打开" target="_blank">SRR7722939_web_summary.html</a>
+</small></p>
+
+
+</div>
+<div id="细胞过滤cell-filtering" class="section level2">
+<h2><span class="header-section-number">3.4</span> <strong>细胞过滤(Cell filtering)</strong></h2>
+<hr />
+<p>&emsp;&emsp;得到Cell Ranger生成的基因表达矩阵之后，我们会根据基因检出数，线粒体UMI占比等指标对细胞进行再次过滤（针对人、小鼠、大鼠样本类型），并使用DoubletFinder预测 scRNA-sequecing data中的doublets，去除数据集中的多细胞，以保证后续分析结果的可靠性和准确性。每个样本细胞的基因检出数，Cell QC 信息如下：</p>
+
+```{r}
+dataFilter <- read.csv(paste0('./2.Summary/',Sample_Name,'/metrics_summary.csv'))
+DT::datatable(dataFilter,rownames = FALSE,
+extensions ="Buttons", 
+options = list(
+dom = 'Bfrtip',
+buttons = c('copy', 'csv', 'excel'),
+fixedHeader = TRUE,
+scrollX = TRUE, 
+autoWidth = TRUE,
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p>
+</p>
+<p class="tremark"><small>
+<strong><font face="Times New Roman">min.cells</font></strong>：基因有表达的最小细胞数，即基因至少在几个细胞中表达，小于该值的基因被过滤掉<br /> 
+<strong><font face="Times New Roman">low.thresholds_nGene</font></strong>：细胞检出基因数的最小阈值，即小于该值的细胞被过滤掉<br /> 
+<strong><font face="Times New Roman">high.thresholds_nGene</font></strong>：细胞检出基因数的最大阈值，即大于该值的细胞被过滤掉<br /> 
+<strong><font face="Times New Roman">high.thresholds_percent.mito</font></strong>：线粒体基因UMI占比的最大阈值，即大于该值的细胞被过滤掉<br /> 
+<strong><font face="Times New Roman">high.thresholds_percent.HB</font></strong>：红细胞基因UMI最大占比的阈值，即大于该值的细胞被过滤掉<br /> 
+<strong><font face="Times New Roman">gene_number</font></strong>：过滤前的基因数目 <br /> 
+<strong><font face="Times New Roman">cell_number</font></strong>：过滤前的细胞数目<br /> 
+<strong><font face="Times New Roman">nGene_median</font></strong>：过滤前基因检出数的中值<br />
+<strong><font face="Times New Roman">gene_number_filtered</font></strong>：过滤后的基因数目<br /> 
+<strong><font face="Times New Roman">cell_number_filtered</font></strong>：过滤后的细胞数目<br /> 
+<strong><font face="Times New Roman">nGene_median_filtered</font></strong>：过滤后基因检出数的中值<br />
+</small></p>
+<p>
+</p>
+<p>对上述过滤条件的可视化结果如下：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Cell filtering</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./3.Cell_filtering/',Sample_Name), pattern = 'cluster_UMAP.png|cluster_UMAP_single_doublt.png|nGene_nUMI_mito_HB.png|nGene_nUMI_mito_HB_relation.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#Cell_filtering', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE}
+contn <- paste0('<div id="Cell_filtering', fnm, '" class="tab-pane fade"><img src="./3.Cell_filtering/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="Cell_filtering', fnm[[1]], '" class="tab-pane fade active in"><img src="./3.Cell_filtering/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p><small>
+<strong><font face="Times New Roman">cluster_UMAP</font></strong>：未去除多细胞时的Seurat 绘制UMAP结果<br /> 
+<strong><font face="Times New Roman">cluster_UMAP_single_doublt</font></strong>：多细胞检出UMAP展示：Doublet为DoubletFinder识别的多细胞<br /> 
+<strong><font face="Times New Roman">nGene_nUMI_mito_HB</font></strong>： Seurat 绘制 nCount/nFeatuer/mito/HB占比分布情况<br /> 
+<strong><font face="Times New Roman">nGene_nUMI_mito_HB_relation</font></strong>：Seurat 绘制 nFeatuer/mito/HB随nCount的变化关系<br /> 
+<small><strong><font face="Times New Roman" color="#FF0000">注：</strong>Cell filtering 使用的软件包是Seurat和DoubletFinder，这里的分群结果只是初步质控可视化展示，不是最终分群结果。
+</font></small></p>
+<p>
+</p>
+
+
+</div>
+<div id="样本tsneumap分型分析" class="section level2">
+<h2><span class="header-section-number">3.5</span> <strong>样本tSNE/UMAP分型分析</strong></h2>
+<hr />
+<p>&emsp;&emsp;基于过滤之后的细胞-基因表达矩阵，Seurat首先会对数据进行标准化，而后通过降维和聚类进行细胞分型，具体如下：</p>
+<p>1）数据标准化和降噪</p>
+<p>&emsp;&emsp;Seurat默认采用全局归一化方法 “LogNormalize”对基因表达矩阵进行标准化，对于每个细胞，分别将每个基因的表达量除以该细胞的整体表达量，即转换为相对丰度， 然后乘以归一化因子（默认10,000），再进行log转化。数据标准化后，紧接着seurat会提取出在细胞间变异系数较大的基因，并基于它们进行下游的分析。在进行下游的降维和聚类分析之前，为进一步降低系统误差（如技术噪音，批次效应，细胞周期等），seurat还会通过构建线性模型来消除这些变异来源。</p>
+<p>2）聚类分析</p>
+<p>&emsp;&emsp;聚类分析用于识别细胞亚型。在seurat中，首先进行PCA主成分分析，然后评估最显著的主成分，挑选贡献最大的几个主成分进行聚类分析。聚类时采用graph-based聚类算法，其通过欧几里得距离构建K近邻（KNN）图，默认采用Louvain算法对细胞进行分组和模块优化。根据聚类结果，采用t-SNE/UMAP降维算法，在二维空间上展示细胞的分布情况，同一cluster的细胞用相同颜色表示。</p>
+<p>&emsp;&emsp;每个样本分型结果的tSNE结果展示如下。如果信息搜集表中含有多样本整合分析，则会展示多样本tSNE/UMAP图(以cluster或样本标记)。结题报告中以Graph-based聚类结果为例进行展示：</p>
+
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>tSNE/UMAP图</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./4.2.Analysis_Seurat/',Sample_Name,'/DIMENSION'), pattern = '_cluster_UMAP.png|_cluster_tSNE.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#tSNE_UMAP', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE}
+contn <- paste0('<div id="tSNE_UMAP', fnm, '" class="tab-pane fade"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/DIMENSION/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="tSNE_UMAP', fnm[[1]], '" class="tab-pane fade active in"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/DIMENSION/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+</div>
+<div id="差异基因展示" class="section level2">
+<h2><span class="header-section-number">3.6</span> <strong>差异基因展示</strong></h2>
+<hr />
+<p>&emsp;&emsp;为了找到不同细胞亚群之间的差异基因，Seurat通过样品的一个亚群与该样品的所有其他亚群进行比较，得到该亚群细胞与其他亚群细胞之间的差异基因列表。例如可将cluster 1的细胞作为一组，其他cluster的细胞作为另一组，利用差异分析算法（默认采用Wilcoxon rank sum test）寻找cluster 1的差异高表达基因，为进一步筛选marker基因提供依据。针对各cluster中差异高表达的基因以多种形式进行展示，结题报告中以信息搜集表中填写的第一个样本的Graph-based聚类结果为例进行展示。</p>
+<div id="差异基因violin图形展示" class="section level3">
+<h3><span class="header-section-number">3.6.1</span> <strong>差异基因Violin图形展示</strong></h3>
+<hr />
+<p>&emsp;&emsp;挑选每个cluster top4（按logFC排序）高表达基因观察其在不同cluster中的表达情况，绘制小提琴图，如下图所示：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>差异基因Violin图</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./4.2.Analysis_Seurat/',Sample_Name,'/Marker'), pattern = '_violin.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#Violin', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="Violin', fnm, '" class="tab-pane fade"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="Violin', fnm[[1]], '" class="tab-pane fade active in"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+</div>
+<div id="差异基因tsneumap图形展示" class="section level3">
+<h3><span class="header-section-number">3.6.2</span> <strong>差异基因tSNE/UMAP图形展示</strong></h3>
+<hr />
+<p>&emsp;&emsp;t-分布邻域嵌入算法（t-SNE）与UMAP（一致流形逼近与投影，Uniform Manifold Approximation and Projection）维数约减算法能有效地将大数据集投射到两个或三个维度，从而使得相似的细胞聚集在一起。挑选每个cluster的top4（按logFC排序）高表达基因进行特异标注，可获得每个差异基因在各cluster中的表达情况。如下图所示：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>差异基因tSNE/UMAP图</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./4.2.Analysis_Seurat/',Sample_Name,'/Marker'), pattern = '_tsne.png|_umap.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#UMAP', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="UMAP', fnm, '" class="tab-pane fade"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="UMAP', fnm[[1]], '" class="tab-pane fade active in"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+</div>
+<div id="差异基因聚类热图展示" class="section level3">
+<h3><span class="header-section-number">3.6.3</span> <strong>差异基因聚类热图展示</strong></h3>
+<hr />
+<p>&emsp;&emsp;将各个cluster鉴定到的top 差异基因进行整体热图展示，同一个cluster内的差异基因表达量会高于其他组，热图中黄色表示高表达，紫色表示低表达。聚类热图如下图所：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>差异基因聚类热图</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./4.2.Analysis_Seurat/',Sample_Name,'/Marker'), pattern = '_Heatmap.png|_plotHeatmap.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#plotHeatmap', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="plotHeatmap', fnm, '" class="tab-pane fade"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="plotHeatmap', fnm[[1]], '" class="tab-pane fade active in"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+<p>
+</p>
+<p class="tremark">
+<strong><font face="Times New Roman">SampleName_Heatmap</font></strong>：Seurat 高变基因热图展示 <br /> 
+<strong><font face="Times New Roman">SampleName_plotHeatmap</font></strong>：使用scater对高变基因聚类，聚类在一起的基因可能有相同的表达模式<br />
+</p>
+<p>
+</p>
+
+
+</div>
+<div id="差异基因关联展示" class="section level3">
+<h3><span class="header-section-number">3.6.4</span> <strong>差异基因关联展示</strong></h3>
+<hr />
+<p>&emsp;&emsp;将各个cluster鉴定到的top 2 差异基因关联展示，,更清楚地反映感兴趣的两个基因在各个cluster中的表达情况。示例如下，点击图片可查看高清图片：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>差异基因关联</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./4.2.Analysis_Seurat/',Sample_Name,'/Marker'), pattern = '_coExpression.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+pnm <- paste0('<li class><a href="#diff_relation', fnm, '" data-toggle="tab" aria-expanded="false">', fnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="diff_relation', fnm, '" class="tab-pane fade"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="diff_relation', fnm[[1]], '" class="tab-pane fade active in"><img src="./4.2.Analysis_Seurat/',Sample_Name,'/Marker/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p>见结果文件：Analysis_Seurat/SanpleName/Marker/*co-expression.{pdf,png}</p>
+
+
+</div>
+</div>
+<div id="功能富集分析" class="section level2">
+<h2><span class="header-section-number">3.7</span> <strong>功能富集分析</strong></h2>
+<hr />
+<p>&emsp;&emsp;通过对不同聚类方式每个cluster差异高表达基因进行富集分析，可以找到每个cluster差异高表达基因与哪些生物学功能或通路显著性相关。诺禾致源采用clusterProfiler软件对每个cluster差异高表达基因集进行GO功能富集分析，KEGG通路富集分析。富集分析基于超几何分布原理。结题报告展示的表格是信息搜集表中填写的第一个样本以Graph-based聚类方式得到的cluster1差异高表达基因集的富集分析结果。结题报告展示的图片是该样本以Graph-based聚类方式得到的所有cluster差异高表达基因集的富集分析结果。</p>
+<div id="go功能富集" class="section level3">
+<h3><span class="header-section-number">3.7.1</span> <strong>GO功能富集</strong></h3>
+<hr />
+<p>&emsp;&emsp;GO(Gene Ontology)是描述基因功能的综合性数据库，可分为分子功能（Molecular Function），生物过程（biological process）和细胞组成（cellular component）三个部分。GO富集以padj小于0.05为显著富集，富集结果如下表所示，见结果文件：4.Enrichment/GO：</p>
+
+
+```{r  error = TRUE}
+go_csv <- dir(paste0('./6.Enrichment/GO/',Sample_Name), pattern = '_GOenrich.csv', recursive = TRUE, full.names = TRUE)
+#go_csv <- go_csv[grepl('Seurat',go_csv)]
+dataFilter <- read.csv(go_csv[1])
+DT::datatable(dataFilter,rownames = FALSE,
+options = list(
+scrollX = TRUE, 
+fixedHeader = TRUE,
+autoWidth = TRUE,
+columnDefs = list(list(className = 'dt-center', targets = c(1,3:9)),list(width = '550', targets = c(2))),
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+
+<p class="tremark"><small>
+<strong><font face="Times New Roman">Category</font></strong>：GO数据库<br /> 
+<strong><font face="Times New Roman">ID</font></strong>：GO编号<br /> 
+<strong><font face="Times New Roman">Description</font></strong>：GO编号对应的功能描述<br /> 
+<strong><font face="Times New Roman">GeneRatio</font></strong>：注释到GO编号上的cluster差异高表达基因数与cluster差异高表达基因总数的比值<br /> 
+<strong><font face="Times New Roman">BgRatio</font></strong>：注释到GO编号上的背景基因数与背景基因总数的比值<br /> 
+<strong><font face="Times New Roman">pvalue</font></strong>：显著性检验p值<br /> 
+<strong><font face="Times New Roman">padj</font></strong>：校正后的p值<br /> 
+<strong><font face="Times New Roman">geneID</font></strong>：注释到GO编号上的差异基因ID<br /> 
+<strong><font face="Times New Roman">geneName</font></strong>：注释到GO编号上的差异基因名称 
+<strong><font face="Times New Roman">Count</font></strong>：注释到GO编号上的基因数<br />
+</small></p>
+
+
+<p>&emsp;&emsp;从GO富集分析结果中，选取最显著的30个Term绘制柱状图进行展示，若不足30个，则绘制所有Term信息，结果如下图所示，见结果文件：4.Enrichment/GO：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>GO Bar</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./6.Enrichment/GO/',Sample_Name), pattern = '_GO_bar.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#goBar', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="goBar', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/GO/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="goBar', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/GO/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p>&emsp;&emsp;从GO富集分析结果中，选取最显著的30个Term绘制散点图进行展示，若不足30个，则绘制所有Term信息，结果如下图所示，见结果文件：4.Enrichment/GO：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>GO Dot</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r  error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/GO/',Sample_Name), pattern = '_GO_dot.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#goDot', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="goDot', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/GO/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="goDot', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/GO/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+</div>
+<div id="kegg通路富集" class="section level3">
+<h3><span class="header-section-number">3.7.2</span> <strong>KEGG通路富集</strong></h3>
+<hr />
+<p>&emsp;&emsp;KEGG(Kyoto Encyclopedia of Genes and Genomes)是整合了基因组、化学和系统功能信息的综合性数据库。KEGG富集以padj小于0.05为显著富集，富集结果如下表所示，见结果文件：4.Enrichment/KEGG：</p>
+
+```{r error = TRUE}
+kegg_csv <- dir(paste0('./6.Enrichment/KEGG/',Sample_Name), pattern = '_KEGGenrich.csv', recursive = TRUE, full.names = TRUE)
+#Kegg_csv <- kegg_csv[grepl('Seurat',kegg_csv)]
+dataFilter <- read.csv(kegg_csv[1])
+DT::datatable(dataFilter,rownames = FALSE,
+options = list(
+scrollX = TRUE, 
+fixedHeader = TRUE,
+autoWidth = TRUE,
+columnDefs = list(list(className = 'dt-center', targets = c(2:7)),list(width = '450', targets = c(1))),
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p class="tremark"><small>
+<strong><font face="Times New Roman">KEGGID</font></strong>：KEGG通路编号<br /> 
+<strong><font face="Times New Roman">Description</font></strong>：KEGG通路编号对应的功能描述<br /> 
+<strong><font face="Times New Roman">GeneRatio</font></strong>：注释到KEGG通路编号上的cluster差异高表达基因数与cluster差异高表达基因总数的比值<br /> 
+<strong><font face="Times New Roman">BgRatio</font></strong>：注释到KEGG通路编号上的背景基因数与背景基因总数的比值<br /> 
+<strong><font face="Times New Roman">pvalue</font></strong>：显著性检验p值<br /> 
+<strong><font face="Times New Roman">padj</font></strong>：校正后的p值<br /> 
+<strong><font face="Times New Roman">geneID</font></strong>：注释到KEGG通路编号上的基因<br /> 
+<strong><font face="Times New Roman">geneName</font></strong>：注释到KEGG通路编号上的差异基因名称<br /> 
+<strong><font face="Times New Roman">KEGG_ID</font></strong>：富集到该通路的cluster差异高表达基因对应的KEGG_ID，即KEGG官网中每个pathway节点中基因的Entry<br /> 
+<strong><font face="Times New Roman">Entrez_ID</font></strong>：富集到该通路的cluster差异高表达基因对应的NCBI-GeneID<br /> 
+<strong><font face="Times New Roman">Count</font></strong>：注释到KEGG通路编号上的基因数<br />
+</small></p>
+
+
+<p>&emsp;&emsp;从KEGG富集结果中，选取最显著的20个通路绘制柱状图进行展示，若不足20个，则绘制所有通路信息，结果如下图所示，见结果文件：4.Enrichment/KEGG：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>KEGG Bar</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/KEGG/',Sample_Name), pattern = '_kegg_bar.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#keggBar', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="keggBar', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="keggBar', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p>&emsp;&emsp;从KEGG富集结果中，选取最显著的20个通路绘制散点图进行展示，若不足20个，则绘制所有通路信息，结果如下图所示，见结果文件：4.Enrichment/KEGG：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>KEGG Dot</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/KEGG/',Sample_Name), pattern = '_kegg_dot.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#keggDot', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="keggDot', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="keggDot', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p>&emsp;&emsp;从KEGG富集结果中，选取显著通路图并标记显著差异的基因，结果如下图所示，见结果文件：4.Enrichment/KEGG/{sample}/{graphclust/kmeans_*_clusters}/pathway_plot/{Cluster}：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Pathway</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/KEGG/',Sample_Name), pattern = '.pathview.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)][1]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#pathview', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="pathview', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="pathview', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/KEGG/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<br />
+<p>&emsp;&emsp;为便于查看每个cluster差异高表达基因在通路图中的分布情况，我们将每个cluster差异高表达基因标注到通路图中，查看方法如下：拿到全部分析结果后，打开results结果目录中Enrichment文件夹下相应比较组合的html文件，点击不同的通路名称会弹出相应的通路图。其中，包含差异高表达基因的KO节点标红色。鼠标悬停于标记的KO节点，弹出每个cluster差异高表达基因细节框，标色同上，括号中数字为log2(Fold change)。以上步骤可脱机实现，如连接互联网，点击各个节点，可以连接到KEGG官方数据库中各个KO的具体信息页。见结果文件：4.Enrichment/KEGG/{sample}/{graphclust/kmeans_*_clusters}/{Cluster}/{Cluster}.html。</p>
+
+
+</div>
+<div id="reactome富集分析" class="section level3">
+<h3><span class="header-section-number">3.7.3</span> <strong>Reactome富集分析</strong></h3>
+<hr />
+<p>&emsp;&emsp;Reactome数据库汇集了人类各项反应及生物学通路。Reactome富集以padj小于0.05为显著富集，富集结果如下表所示，见结果文件：4.Enrichment/Reactome。</p>
+
+```{r error = TRUE}
+reactom_csv <- dir(paste0('./6.Enrichment/Reactome/',Sample_Name), pattern = '_Reactome_enrich.csv', recursive = TRUE, full.names = TRUE)
+#reactom_csv <- reactom_csv[grepl('Seurat',reactom_csv)]
+dataFilter <- read.csv(reactom_csv[1])
+DT::datatable(dataFilter,rownames = FALSE,
+options = list(
+scrollX = TRUE, 
+fixedHeader = TRUE,
+autoWidth = TRUE,
+columnDefs = list(list(className = 'dt-center', targets = c(2:7)),list(width = '120', targets = c(0)),list(width = '420', targets = c(1))),
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p class="tremark"><small>
+<strong><font face="Times New Roman">ReactomeID</font></strong>：Reactome编号<br /> 
+<strong><font face="Times New Roman">Description</font></strong>：Reactome编号对应的功能描述<br /> 
+<strong><font face="Times New Roman">GeneRatio</font></strong>：注释到Reactome编号上的cluster差异高表达基因数与cluster差异高表达基因总数的比值<br /> 
+<strong><font face="Times New Roman">BgRatio</font></strong>：注释到Reactome编号上的背景基因数与背景基因总数的比值<br /> 
+<strong><font face="Times New Roman">pvalue</font></strong>：显著性检验p值<br /> 
+<strong><font face="Times New Roman">padj</font></strong>：校正后的p值<br /> 
+<strong><font face="Times New Roman">geneID</font></strong>：注释到Reactome编号上的基因<br /> 
+<strong><font face="Times New Roman">geneName</font></strong>：注释到Reactome通路编号上的差异基因名称<br /> 
+<strong><font face="Times New Roman">keggID</font></strong>：注释到Reactome通路编号上的差异基因keggID<br /> 
+<strong><font face="Times New Roman">Count</font></strong>：注释到Reactome编号上的基因数<br />
+</small></p>
+
+
+<p>&emsp;&emsp;从Reactome富集分析结果中，选取最显著的20个Term绘制柱状图进行展示，若不足20个，则绘制所有Term信息，结果如下图所示，见结果文件：4.Enrichment/Reactome：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Reactome Bar</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/Reactome/',Sample_Name), pattern = '_Reactome_bar.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#ReactomeBar', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="ReactomeBar', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/Reactome/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="ReactomeBar', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/Reactome/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+<p>&emsp;&emsp;从Reactome富集分析结果中，选取最显著的20个Term绘制散点图进行展示，若不足20个，则绘制所有Term信息，结果如下图所示，见结果文件：4.Enrichment/Reactome：</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Reactome Dot</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r error = TRUE}
+fnm <- dir(paste0('./6.Enrichment/Reactome/',Sample_Name), pattern = '_Reactome_dot.png', recursive = TRUE)
+#fnm <- fnm[grepl('Seurat',fnm)]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#ReactomeDot', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE, error = TRUE}
+contn <- paste0('<div id="ReactomeDot', tnm, '" class="tab-pane fade"><img src="./6.Enrichment/Reactome/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="ReactomeDot', tnm[[1]], '" class="tab-pane fade active in"><img src="./6.Enrichment/Reactome/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+
+</div>
+<div id="蛋白互作网络分析" class="section level3">
+<h3><span class="header-section-number">3.7.4</span> <strong>蛋白互作网络分析</strong></h3>
+<hr />
+<p>&emsp;&emsp;我们主要应用STRING蛋白质互作数据库( <a href="http://string-db.org" class="uri">http://string-db.org</a> ) 中的互作关系进行每个cluster差异高表达基因蛋白互作网络的分析。针对于数据库中包含的物种，直接从数据库中提取出目标基因集(比如每个cluster差异高表达基因list)的互作关系来构建网络；针对于数据库中不包含的物种，我们首先将目标基因集中的序列应用blastx比对到string数据库中包含的参考物种的蛋白质序列上，并利用比对上的该参考物种的蛋白质互作关系构建互作网络，见结果文件：4.Enrichment/PPI。</p>
+<p>&emsp;&emsp;我们提供每个cluster差异高表达基因蛋白互作网络数据文件，此文件可以直接导入Cytoscape软件进行可视化编辑,<a href="src/images/CytoscapeQuickStart.pdf">Cytoscape教程</a>。Cytoscape可以针对一些网络&gt;的拓扑属性进行统计和标示作图，比如：互作网络图中节点(node)的大小与此节点的度(degree)成正比，即与此节点相连的边越多，它的度越大，节点也就越大，这些节点在网络中可能处于较为核心的位置。节点的颜色与此节点的聚集系数(clustering coefficient)相关，颜色梯度由绿到红对应聚集系数的值由低到高；聚集系数表示此节点的邻接点之间的连通性好坏，聚集系数值越高表示此节点的邻接点之间的连通性越好等等。根据不同的研究目的和需求，还可以在网络图中进行调整节点位置和颜色、标注表达量水平等。</p>
+
+
+
+</div>
+<div id="差异基因tf注释" class="section level2">
+<h2><span class="header-section-number">3.8</span> <strong>差异基因TF注释</strong></h2>
+<hr />
+<p>&emsp;&emsp;如果该物种在AnimalTFDB/PlantTFDB数据库已有转录因子注释信息，直接根据基因ID从数据库中筛选转录因子；对于在该数据库没有收录的物种，我们先用interscan对基因进行SUPERFAMILY和Pfam数据库注释，找到基因和DBD(Transcription factor prediction database)数据库的对应关系，从而筛选转录因子，见结果文件：4.Enrichment/TF。</p>
+
+```{r error = TRUE}
+reactom_csv <- dir(paste0('./6.Enrichment/TF/',Sample_Name), pattern = '_tf.csv', recursive = TRUE, full.names = TRUE)
+#reactom_csv <- reactom_csv[grepl('Seurat',reactom_csv)]
+dataFilter <- read.csv(reactom_csv[1])
+DT::datatable(dataFilter,rownames = FALSE,
+options = list(
+scrollX = TRUE, 
+fixedHeader = TRUE,
+autoWidth = TRUE,
+
+initComplete = htmlwidgets::JS(
+    "function(settings, json) {",
+    "$(this.api().table().header()).css({'background-color': '#4F94CD', 'color': '#fff'});",
+    "}")
+),
+editable = list(target = 'row'))
+```
+
+<p class="tremark"><small>
+<strong><font face="Times New Roman">Gene ID</font></strong>：转录因子基因ID<br /> 
+<strong><font face="Times New Roman">Gene Name</font></strong>：基因名称<br /> 
+<strong><font face="Times New Roman">TF_Family</font></strong>：转录因子家族<br /> 
+<strong><font face="Times New Roman">Cluster * Mean UMI Counts</font></strong>：基因在该Cluster所有细胞的UMI counts 均值<br /> 
+<strong><font face="Times New Roman">Cluster * Log2 foldchange</font></strong>：基因在该cluster内表达量与其他所有细胞表达量的log2倍数比值<br /> 
+<strong><font face="Times New Roman">Cluster * Adjusted p value</font></strong>：经过Benjamini-Hochberg多重检验校正后的p值，表示差异显著性的度量<br />
+</small></p>
+<p>富集分析见结果文件：Enrichment/Seurat</p>
+</div>
+</div>
+
+
+<div id="轨迹推断cell-trajectory" class="section level2">
+<h2><span class="header-section-number">3.9</span> <strong>轨迹推断(cell trajectory)</strong></h2>
+<p>&emsp;&emsp;基于Seurat分析的结果采用<a href="http://cole-trapnell-lab.github.io/monocle-release/docs/">monocle2</a>进行细胞轨迹推断分析（又称拟时（pseudotime）分析），可以推断出发育过程细胞的分化轨迹或细胞亚型的演化过程，在发育相关研究中使用频率较高。主要基于关键基因的表达模式，在拟时间中对单个细胞进行排序，模拟出细胞随拟时间发展发育过程的动态变化。</p>
+<p>&emsp;&emsp;轨迹呈树形结构，由于事先不知道应该调用树的哪个轨迹作为“开始”，所以monocle2使用orderCells来指定开始。我们绘制轨迹，然后分别按照Seurat分群结果和monocle2拟时结果给细胞mapping颜色。</p>
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Reactome Dot</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./7.Trajectories/',Sample_Name), pattern = '^cell_trajectory', recursive = TRUE)
+fnm <- fnm[endsWith(fnm, '.png')]
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#ReactomeDot', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE}
+contn <- paste0('<div id="ReactomeDot', tnm, '" class="tab-pane fade"><img src="./7.Trajectories/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="ReactomeDot', tnm[[1]], '" class="tab-pane fade active in"><img src="./7.Trajectories/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<script type="application/json" data-for="htmlwidget-c3d02d0e74a38bca6530">{"x":[],"evals":[],"jsHooks":[]}</script> 轨迹推断见结果文件： Trajectories/SampleName</p>
+<p>
+</p>
+<p class="tremark">
+<strong><font face="Times New Roman">cell_trajectory</font></strong>：细胞聚类结果在轨迹图中的排序<br /> 
+<strong><font face="Times New Roman">Pseudotime_cell_trajectory</font></strong>：轨迹结构的拟时间排序<br />
+</p>
+<p>
+</p>
+<p>&emsp;&emsp;我们使用一种特殊类型的热图，可视化明显依赖于分支的基因的变化。这张热图同时显示了branch_point =1两个分支的变化。列是伪时间中的点，行是基因，伪时间的开始在热图的中间。从热图的中间读到右边是一个伪时间谱系，左边亦然。这些基因是分层聚类的(默认num_clusters = 6)，以此可视化具有类似的依赖于序列的基因模块。同时根据monocle2选择qval最小的前3个基因展示单个基因随拟时间的变化趋势。</p>
+
+
+<div>
+<ul class="btn-group">
+<li class="dropdown active" style="list-style-type: none;">
+<a href="#" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false"><strong>Reactome Dot</strong><span class="caret"></span> </a>
+<ul class="dropdown-menu">
+
+```{r}
+fnm <- dir(paste0('./7.Trajectories/',Sample_Name), pattern = 'branch_dependent_gene_heatmap.png|genes_branched_pseudotime.png', recursive = TRUE)
+fnm <- str_replace(fnm,'.png','')
+fullnm <- stringr::str_replace_all(fnm,'/','>')
+tnm <- stringr::str_replace_all(fnm,'/','')
+pnm <- paste0('<li class><a href="#ReactomeDot', tnm, '" data-toggle="tab" aria-expanded="false">', fullnm, '</a></li>')
+dnm <- pnm[[1]]
+for (p in pnm[-1]) {
+  dnm <- paste0(dnm,p)
+}
+HTML(dnm)
+```
+
+</ul>
+</li>
+</ul>
+<div id="myTabContent" class="tab-content" align="center">
+
+```{r echo=FALSE}
+contn <- paste0('<div id="ReactomeDot', tnm, '" class="tab-pane fade"><img src="./7.Trajectories/',Sample_Name,'/', fnm, '.png" /></div>')
+dcont <- paste0('<div id="ReactomeDot', tnm[[1]], '" class="tab-pane fade active in"><img src="./7.Trajectories/',Sample_Name,'/', fnm[[1]], '.png" /></div>')
+for (q in contn[-1]) {
+  dcont <- paste0(dcont, q)
+}
+HTML(dcont)
+```
+</div>
+</div>
+
+<p>
+</p>
+<p class="tremark">
+<strong><font face="Times New Roman">branch_dependent_gene_heatmap</font></strong>：branch_point =1两个分支基因的变化，并对基因进行分层聚类(默认num_clusters = 6)<br /> 
+<strong><font face="Times New Roman">genes_branched_pseudotime</font></strong>：monocle2选择qval最小的前3个基因展示单个基因随拟时间的变化趋势<br />
+</p>
+<p>
+</p>
+
+
+</div>
+</div>
+<div id="数据挖掘推荐" class="section level1">
+<h1><span class="header-section-number">4</span> <strong>数据挖掘推荐</strong></h1>
+<hr />
+<p>&emsp;&emsp;单细胞转录组测序（Single-cell RNA Sequencing ）通过在单个细胞水平上进行测序，解决了用组织样本无法获得不同细胞间的异质性信息或样本量太少无法进行常规测序的难题，为科学家研究动植物单个细胞的行为、机制等提供了新的方向，为我们理解遗传、发育、疾病机理等提供了新的研究工具。针对课题的数据挖掘需求，对于信息分析结果给出以下建议：</p>
+<div id="细胞分类与定义" class="section level2">
+<h2><span class="header-section-number">4.1</span> <strong>细胞分类与定义</strong></h2>
+<hr />
+<div id="聚类与分类的定义" class="section level3">
+<h3><span class="header-section-number">4.1.1</span> <strong>聚类与分类的定义</strong></h3>
+<p>&emsp;&emsp;聚类（根据距离矩阵）是将相似的事物聚集在一起，而将不相似的事物划分为不同的类别的过程。和分类的差别是，聚类往往是一种无监督的方式，分类需要从样本中学习分类的规则进行分类。即分类是我们已经知道了事物的类型，提取相关特征进行分类，而聚类仅仅是将相似的事物聚集在一起。</p>
+</div>
+<div id="聚类方法" class="section level3">
+<h3><span class="header-section-number">4.1.2</span> <strong>聚类方法</strong></h3>
+<p>&emsp;&emsp;首先关注的是细胞聚类的结果，即应用非监督聚类算法的细胞分群。10X genomics官网提供的Cell Ranger结果中采用Graph-based和K-means两种细胞分群结果，可以满足大部分样本类型的sc-RNA数据探索与分析。我们的结果主要基于Cell Ranger提供的算法来做分析，并提供10X单细胞数据探索交互软件:Loupe Cell Browser的使用说明文档，方面老师以交互进行数据探索分析。随着单细胞转录组测序技术的发展，更多的聚类算法与相应的软件包被开发出来，如果Cell Ranger的结果不太符合实验预期，我们的高级分析部分可尝试采用<a href="https://www.nature.com/articles/nmeth.4236">SC3</a>等软件包提供的算法再次进行细胞分群。</p>
+<p>&emsp;&emsp;对于多样本单细胞整合分析（integrative single-cell analysis)，可尝试采用Seurat-CCA方法进行分析，提取共有数据结构来进行降维。目前sc-RNA一个技术难点是在多个样本整合分析时需要考虑批次效应（batch effect），除了Seurat之外，其它工具Scran和Scrone也可以用来纠正批次效应。但是，批次矫正会带来假阳性的问题，所以针对样本采用何种纠正工具需要非常谨慎。</p>
+</div>
+<div id="细胞定义" class="section level3">
+<h3><span class="header-section-number">4.1.3</span> <strong>细胞定义</strong></h3>
+<p>目前细胞定义的研究限于技术发展还是存在一定主观性。细胞定义的原则掌握三点：</p>
+<ul>
+<li>第一，细胞定义的关键在于：differentially expressed marker genes，其中涉及差异和marker两个因素。Maker Cell Type Genes一般是在该研究领域经研究公认的能够鉴定细胞类型的基因。差异是指此亚群细胞与其他群相比，存在显著差异的基因。</li>
+<li>第二，不管何种细胞聚类方法，以能够定义细胞类型的聚类方法为优。推荐优选seurat聚类结果进行分析。</li>
+<li>第三，细胞定义先大类后定义小类，先将主要细胞群划分出来，比如T细胞、B细胞，再在相关细胞群中细分细胞小类，例如在T细胞群中细分Naive、Memory等，也可对某一大类细胞进行再分群，细化细胞亚群。</li>
+</ul>
+<p>&emsp;&emsp;基于以上三点，推荐从两个方面入手进行细胞定义：一是在差异基因结果中筛选marker基因，二是从marker基因入手，定位其所在主要细胞群。 总之，目前细胞定义仍然是单细胞转录组数据分析中的一个挑战，需要汇总marker基因，结合差异与marker基因，对不同细胞聚类结果进行定义，循环往复，直至得到最优的细胞定义结果。目前已有相关的R包如<a href="https://github.com/dviraran/SingleR">SingleR</a>可以为细胞群定义提供参考，它通过每个cluster与已知细胞类型的表达谱的相似性来定义细胞类型。</p>
+<p>&emsp;&emsp;细胞类型的鉴定需要大量的先验知识，我们整理了<a href="src/images/10X-sc-RNA-seq-Cell-type-identification-documentation.pdf">10x单细胞转录组细胞类型鉴定辅助文档</a>可供做细胞类型鉴定时参考，文档介绍了常用的数据库以及细胞类型鉴定的一般方法。</p>
+</div>
+</div>
+<div id="拟时分析" class="section level2">
+<h2><span class="header-section-number">4.2</span> <strong>拟时分析</strong></h2>
+<hr />
+<p>&emsp;&emsp;拟时分析适用于发育生物学中的发育轨迹研究，或者肿瘤微环境中免疫细胞状态的变化研究等。拟时分析推荐在细胞定义完成的基础上进行，有自己预设的起点、终点或者分化轨迹。</p>
+<p>&emsp;&emsp;拟时（pseudotime）分析，又称细胞轨迹（cell trajectory）分析，通过拟时分析可以推断出发育过程细胞的分化轨迹或细胞亚型的演化过程，在发育相关研究中使用频率较高。主要基于关键基因的表达模式，在拟时间中对单个细胞进行排序，模拟出细胞随拟时间发展发育过程的动态变化。<a href="http://cole-trapnell-lab.github.io/monocle-release/">Monocle</a>是一款常用的拟时分析软件，其计算细胞的相关性得到最小生成树，找到最小路径，然后把其它的所有数据点投射到最小路径，最终得到细胞分化轨迹图的算法。</p>
+</div>
+<div id="数据可视化" class="section level2">
+<h2><span class="header-section-number">4.3</span> <strong>数据可视化</strong></h2>
+<hr />
+<p>&emsp;&emsp;我们提供10X单细胞数据探索交互软件： Loupe Cell Browser的使用说明文档，方便老师对数据进行可视化以及相关的分析，Cellranger结果可以直接打开查看。目前sc-RNA-seq数据可视化除了Loupe Cell Browser之外，主要是基于R语言生态的seurat，monocle，ggplot2等包。</p>
+<p>&emsp;&emsp;流形学习方法的研究目的是为了探索数据集的内部结构或内在规律。流形学习可以从高维非线性数据中探测出其本质特征，通过局部结构学习可以将高维数据的局部几何结构信息在低维空间尽可能地保留下来。由于sc-RNA-sequening数据高纬度、稀疏性的特点，在数据分析中常用到流形学习算法来做数据可视化展示，经典的是t-SNE算法。目前学术界提出一种新的流形学习算法：uniform manifold approximation and projection (UMAP)，采用非线性降维算法，与t-SNE方法相比，UMAP的细胞分群效果更为清晰。</p>
+<p>&emsp;&emsp;此外，如果能够定义出细胞类型，结合不同细胞类型根据相互作用关系receptor-ligand，可以进行受体-配体分析，绘制网络图。单细胞转录组在遗传、发育、疾病机理研究中应用越来越广泛，我们愿意与老师一起探索单细胞水平上的生命奥秘。</p>
+
+
+</div>
+</div>
+<div id="备注" class="section level1">
+<h1><span class="header-section-number">5</span> <strong>备注</strong></h1>
+<hr />
+<div id="结果文件目录列表" class="section level2">
+<h2><span class="header-section-number">5.1</span> <strong>结果文件目录列表</strong></h2>
+<p>&emsp;&emsp;为了方便您查看项目的结果文件，我们提供了结果文件的<a href="src/DirectoryTree.html">目录列表</a>（配有相应的中文说明），项目结果文件可通过此目录列表查看。</p>
+</div>
+<div id="分析软件列表及版本" class="section level2">
+<h2><span class="header-section-number">5.2</span> <strong>分析软件列表及版本</strong></h2>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Analysis
+</th>
+<th style="text-align:center;">
+Software
+</th>
+<th style="text-align:center;">
+Version
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+测序质量评估
+</td>
+<td style="text-align:center;">
+fastp
+</td>
+<td style="text-align:center;">
+0.20.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+数据统计/分析
+</td>
+<td style="text-align:center;">
+CellRanger
+</td>
+<td style="text-align:center;">
+3.1.0/2.2.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+数据分析
+</td>
+<td style="text-align:center;">
+Seurat
+</td>
+<td style="text-align:center;">
+3.1.0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+样本差异分析
+</td>
+<td style="text-align:center;">
+edgeR
+</td>
+<td style="text-align:center;">
+3.18.1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+富集分析
+</td>
+<td style="text-align:center;">
+clusterProfiler
+</td>
+<td style="text-align:center;">
+3.4.4
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="methods" class="section level2">
+<h2><span class="header-section-number">5.3</span> <strong>Methods</strong></h2>
+<p>&emsp;&emsp;为了方便您撰写文章，我们整理了<a href="src/images/Methods.10X.pdf">英文版methods</a>可供参考。</p>
+</div>
+<div id="loupe-cell-brower使用说明" class="section level2">
+<h2><span class="header-section-number">5.4</span> <strong>Loupe Cell Brower使用说明</strong></h2>
+<p>&emsp;&emsp;为了方便您查看结果文件中的cloupe文件，我们提供了Loupe Cell Browser可视化软件的<a href="src/images/Loupe-Cell-Browser-3.1.0_operation_manual.pdf">中文使用说明</a>，用于聚类、分型、差异基因筛选及heatmap图绘制等多功能的实现。</p>
+</div>
+<div id="常见售后答疑" class="section level2">
+<h2><span class="header-section-number">5.5</span> <strong>常见售后答疑</strong></h2>
+<p>&emsp;&emsp;常见售后答疑：<a href="src/images/10XFAQ.pdf">FAQ文档</a></p>
+</div>
+<div id="联系我们" class="section level2">
+<h2><span class="header-section-number">5.6</span> <strong>联系我们</strong></h2>
+<p>&emsp;&emsp;客户服务电话：400-658-1585 &emsp;&emsp;运营反馈邮箱：<a href="mailto:op-scrna@novogene.com">op-scrna@novogene.com</a></p>
+</div>
+<div id="参考文献" class="section level2">
+<h2><span class="header-section-number">5.7</span> <strong>参考文献</strong></h2>
+<ul>
+<li><p>1.Baglama, J. &amp; Reichel, L. Augmented Implicitly Restarted Lanczos Bidiagonalization Methods. SIAM Journal on Scientific Computing 27, 19–42 (2005).</p></li>
+<li><p>2.Blondel, V. D., Guillaume, J.-L., Lambiotte, R. &amp; Lefebvre, E. Fast unfolding of communities in large networks. Journal of Statistical Mechanics: Theory and Experiment 2008, (2008).</p></li>
+<li><p>3.Robinson, M. D. &amp; Smyth, G. K. Small-Hbpc estimation of negative binomial dispersion, with applications to SAGE data. Biostatistics 9, 321–332 (2007). Link to edgeR source.</p></li>
+<li><p>4.Van der Maaten, L.J.P. Accelerating t-SNE using Tree-Based Algorithms. Journal of Machine Learning Research 15, 3221-3245 (2014).</p></li>
+<li><p>5.Yu, D., Huber, W. &amp; Vitek, O. Shrinkage estimation of dispersion in Negative Binomial models for RNA-seq experiments with small Hbpc size. Bioinformatics 29, 1275–1282 (2013).</p></li>
+<li><p>6.Grace X.Y. Zheng1, Jessica M. Terry1 Massively parallel digital transcriptional profiling of single cells (2017).</p></li>
+<li><p>7.Dobin A, Davis C A, Schlesinger F, et al. STAR: ultrafast universal RNA-seq aligner[J]. Bioinformatics, 2013, 29(1): 15-21.</p></li>
+<li><p>8.Robinson M D, McCarthy D J, Smyth G K. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data[J]. Bioinformatics, 2010, 26(1): 139-140.</p></li>
+<li><p>9.Lun AT, McCarthy DJ, Marioni JC. A step-by-step workflow for low-level analysis of single-cell RNA-seq data. Version 1. F1000Res. 2016 Aug 31;5:2122.</p></li>
+<li><p>10.Risso D, Ngai J, Speed TP, Dudoit S. Normalization of RNA-seq data using factor analysis of control genes or samples. Nat Biotechnol. 2014 Sep;32(9):896-902.</p></li>
+<li><p>11.Xiaojie Qiu, Qi Mao, Ying Tang, Li Wang, Raghav Chawla, Hannah Pliner, Cole Trapnell. Reversed graph embedding resolves complex single-cell trajectories. Nature Methods volume 14, pages 979–982 (2017).</p></li>
+<li><p>12.Manu Setty, Michelle D Tadmor, Shlomit Reich-Zeliger, Omer Angel, Tomer Meir Salame, Pooja Kathail, Kristy Choi, Sean Bendall, Nir Friedman and Dana Pe’er. Wishbone identifies bifurcating developmental trajectories from single-cell data. Nature Biotechnology volume 34, pages 637–645 (2016)</p></li>
+<li><p>13.Gioele La Manno, Ruslan Soldatov, Amit Zeisel, Emelie Braun, Hannah Hochgerner, Viktor Petukhov, Katja Lidschreiber, Maria E. Kastriti, Peter Lönnerberg, Alessandro Furlan, Jean Fan, Lars E. Borm, Zehua Liu, David van Bruggen, Jimin Guo, Xiaoling He, Roger Barker, Erik Sundström, Gonçalo Castelo-Branco, Patrick Cramer, Igor Adameyko, Sten Linnarsson and Peter V. Kharchenko. RNA velocity of single cells. Nature volume 560, pages 494–498 (2018).</p></li>
+<li><p>14.Etienne Becht, Leland McInnes, John Healy, Charles-Antoine Dutertre, Immanuel W H Kwok, Lai Guan Ng, Florent Ginhoux and Evan W Newell. Dimensionality reduction for visualizing single-cell data using UMAP. Nature Biotechnology volume 37, pages 38–44 (2019).</p></li>
+<li><p>15.V ladimir Yu Kiselev, Kristina Kirschner, Michael T Schaub, Tallulah Andrews, Andrew Yiu, Tamir Chandra, Kedar N Natarajan, Wolf Reik, Mauricio Barahona, Anthony R Green &amp; Martin Hemberg. SC3 - consensus clustering of single-cell RNA-Seq data. Nature Methods volume 14, pages 483–486 (2017).</p></li>
+<li><p>16.Daniel A. Skelly, Galen T. Squiers, Micheal A. McLellan, Mohan T. Bolisetty, Paul Robson, Nadia A. Rosenthal, Alexander R. Pinto. Single-cell transcriptional profiling reveals cellular diversity and inter-communicaiton in the mouse heart. Volume 22, Issue 3, pages 600-610 (2018).</p></li>
+<li><p>17.Zhang X , Lan Y , Xu J , et al. CellMarker: a manually curated resource of cell markers in human and mouse[J]. Nucleic Acids Research(2018).</p></li>
+<li><p>18.ManuPK, JinyanDu,Georgia L, et al. Analysis of Single-Cell RNA-Seq Identifies Cell-Cell Communication Associated with Tumor Characteristics. CellReport(2018).</p></li>
+<li><p>19.Geoffrey S,Jian S, Marcin T, et al. Optimal-Transport Analysis of Single-Cell Gene Expression Identifies Developmental Trajectories in Reprogramming. Cell (2019).</p></li>
+<li><p>20.Wolf, F. Alexander, P. Angerer, and F. J. Theis. SCANPY: large-scale single-cell gene expression data analysis. Genome Biology 19.1(2018).</p></li>
+<li><p>21.Christopher S McGinnis，Lyndsay M Murrow，Zev J Gartneret al:DoubletFinder: Doublet Detection in Single-Cell RNASequencing Data Using Artificial Nearest Neighbors.Cell Syst.2019.8(4):329-337.e4</p></li>
+<li><p>22.Wolock SL, Lopez R, Klein AM. Scrublet: Computational Identification of Cell Doublets in Single-Cell Transcriptomic Data. Cell Syst. 2019. 8(4):281-291.e9</p></li>
+</ul>
+</div>
+</div>
+
+
